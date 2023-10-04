@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments
+venv/
+env/
+*.env
+alembic
+alembic.ini
+# IDE
+.idea/
+
+# Logs
+logs/
+
+# Compiled Python files
+*.pyc
+
+# SQLite database files
+*.sqlite3
+
+# Dependency directories
+lib/
+lib64/
+bin/
+build/
+include/
+libexec/
+share/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Environment-specific files
+.env
+.env.local
+.env.*.local
+
+# Other project-specific files
+*.log
