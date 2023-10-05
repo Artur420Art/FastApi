@@ -64,11 +64,6 @@ async def unicorn_exception_handler(request: Request, exc: UserExeption):
         content={"message": f"Oops! {exc.name} did something. There goes a rainbow..."},
     )
 
-@app.get("/unicorns/{name}")
-async def read_unicorn(name: str):
-    if name == "yolo":
-        raise UserExeption(name=name)
-    return {"unicorn_name": name}
 @app.post("/add")
 async def create_user(user: UserDto, db: Session = Depends(get_db)):
     return manager.create_user(db=db, user=user)
