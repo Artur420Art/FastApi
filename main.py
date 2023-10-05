@@ -1,6 +1,10 @@
 import time
 from datetime import timedelta
 from typing import Annotated
+
+from starlette.responses import JSONResponse
+
+from userAuth.exeptions import UserExeption
 from userAuth.validation import get_user_with_token
 from fastapi import FastAPI, Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
@@ -53,6 +57,18 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
+@app.exception_handler(UserExeption)
+async def unicorn_exception_handler(request: Request, exc: UserExeption):
+    return JSONResponse(
+        status_code=418,
+        content={"message": f"Oops! {exc.name} did something. There goes a rainbow..."},
+    )
+
+@app.get("/unicorns/{name}")
+async def read_unicorn(name: str):
+    if name == "yolo":
+        raise UserExeption(name=name)
+    return {"unicorn_name": name}
 @app.post("/add")
 async def create_user(user: UserDto, db: Session = Depends(get_db)):
     return manager.create_user(db=db, user=user)

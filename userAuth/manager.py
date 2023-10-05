@@ -5,13 +5,18 @@ import bcrypt
 from automapper import mapper
 
 from userAuth.auth import create_access_token
+from userAuth.exeptions import UserExeption
 from userAuth.model import UserEntity
 from userAuth.schema import UserDto, UserLogin
-from userAuth.validation import validate_email, uniqeue_user, get_user
+from userAuth.validation import validate_email, uniqeue_user, get_user, is_valid_password
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 def create_user(db: Session, user: UserDto):
-    uniqeue_user(db=db, user=user)
+    try:
+        uniqeue_user(db=db, user=user)
+        is_valid_password(user.password)
+    except UserExeption as e:
+        raise e
     salt = bcrypt.gensalt()
     password = user.password.encode('utf-8')
     hashed_password = bcrypt.hashpw(password, salt)
