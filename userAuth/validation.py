@@ -13,11 +13,10 @@ EMAIL_REGEX_PATTERN = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
 def uniqeue_user(db: Session, user: UserDto):
     existing_user = db.query(UserEntity).filter(
-        (UserEntity.email == user.email) | (UserEntity.username == user.username)
+        (UserEntity.email == user.email)
     ).first()
     if existing_user:
         raise UserExeption(name=messages.USED, status_code=statuseCode.UNAUTHORIZED)
-
 
 def get_user(db: Session, username: str, password: str):
     user_entity = db.query(UserEntity).filter(UserEntity.username == username).first()
@@ -33,6 +32,7 @@ def get_user_with_token(db:Session, username: str, id: int):
     user_entity =  db.query(UserEntity).filter(UserEntity.id == id).first()
     if user_entity is None:
         raise UserExeption(status_code=statuseCode.NOTFOUND, name=messages.UNOTFOUND)
+
     return user_entity
 def validate_email(email):
     if not re.match(EMAIL_REGEX_PATTERN, email):

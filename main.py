@@ -1,12 +1,13 @@
 import time
 from datetime import timedelta
 from typing import Annotated
-
-from starlette.responses import JSONResponse
+import uuid
+from sqlalchemy.util import b64encode
+from starlette.responses import JSONResponse, FileResponse
 
 from userAuth.exeptions import UserExeption
 from userAuth.validation import get_user_with_token
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends, Request, File, UploadFile, Form
 from fastapi.security import OAuth2PasswordRequestForm
 # from passlib.context import CryptContext
 import bcrypt
@@ -15,7 +16,7 @@ from sqlalchemy.orm import Session
 from database import mdatabase, engine, SessionLocal
 from userAuth import manager
 from userAuth.auth import get_current_user, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_active_user, Token
-from userAuth.schema import UserDto, UserLogin
+from userAuth.schema import UserDto, UserLogin, UploadFileTit
 from userAuth.model import UserEntity, Base
 import databases
 import dotenv
@@ -29,6 +30,7 @@ Base.metadata.create_all(bind=engine)
 dotenv.load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 mdatabase = databases.Database(DATABASE_URL)
+IMAGEDIR = "/Users/aa/Desktop/discord-app/discord-backend/image/"
 
 
 def get_db():
@@ -76,4 +78,6 @@ async def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 
 @app.get("/user/me")
 async def get_user(current_user: Annotated[UserEntity, Depends(get_current_active_user)], db: Session = Depends(get_db)):
-    return get_user_with_token(db=db, username=current_user.username, id=current_user.id)
+    user = get_user_with_token(db=db, username=current_user.username, id=current_user.id)
+    manager.activate_user_account(db=db, user=user)
+    return user
